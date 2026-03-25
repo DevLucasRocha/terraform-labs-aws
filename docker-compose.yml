@@ -1,0 +1,6 @@
+services:
+  localstack:
+    image: localstack/localstack:latest
+    container_name: aws_simulator
+    ports:
+      - "4566:4566"
