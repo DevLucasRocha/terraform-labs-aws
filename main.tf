@@ -21,3 +21,25 @@ resource "aws_instance" "my-first-server" { # serve para criar uma instância EC
     name = "ubuntu-server" # tag para identificar a instância EC2 criada
   }
 }
+
+resource "aws_vpc" "first-vpc" { # serve para criar uma VPC, ou seja, uma rede virtual na nuvem da AWS
+  cidr_block = "10.0.0.0/16" # IP para criar VPC
+tags = {
+    name = "production"
+  }
+}
+
+resource "aws_vpc" "second-vpc" { # serve para criar uma VPC, ou seja, uma rede virtual na nuvem da AWS
+  cidr_block = "10.1.0.0/16"
+tags = {
+    name = "Dev"
+  }
+}
+
+resource "aws_subnet" "subnet-2" { # sub-rede é uma parte da VPC onde os recursos serão criados 
+  vpc_id = aws_vpc.second-vpc.id # chave para identificar a VPC onde a sub-rede será criada
+  cidr_block = "10.1.1.0/24" # IP da subnet para criar a sub-rede que comunicará com a VPC
+  tags = {
+    name = "dev-subnet"
+  }
+}
