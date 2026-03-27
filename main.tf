@@ -37,7 +37,7 @@ tags = {
 }
 
 resource "aws_subnet" "subnet-2" { # sub-rede é uma parte da VPC onde os recursos serão criados 
-  vpc_id = aws_vpc.second-vpc.id # chave para identificar a VPC onde a sub-rede será criada
+  vpc_id = aws_vpc.second-vpc.id # voce define o vpc e aponta para o id da vpc que voce quer criar a sub-rede por isso se usa .id
   cidr_block = "10.1.1.0/24" # IP da subnet para criar a sub-rede que comunicará com a VPC
   tags = {
     name = "dev-subnet"
