@@ -1,45 +1,64 @@
-provider "aws" { # serve para configurar o provedor AWS, ou seja, as credenciais e a região onde os recursos serão criados
+provider "aws" {
+  # ---------------------------------------------------------
+  # CONFIGURAÇÃO DO PROVEDOR (A conexão com a nuvem)
+  # Serve para configurar as credenciais e a região.
+  # ---------------------------------------------------------
   access_key = "test"
   secret_key = "test"
-  region = "us-east-1"
+  region     = "us-east-1"
 
+  # As linhas abaixo enganam o Terraform para ele não buscar credenciais reais na Amazon
   skip_credentials_validation = true
   skip_metadata_api_check     = true
   skip_requesting_account_id  = true
 
-  endpoints { # serve para configurar os endpoints dos serviços da AWS, ou seja, onde os recursos serão criados
+  endpoints {
+    # Redireciona o fluxo para o nosso Docker local (LocalStack) em vez da nuvem real
     ec2 = "http://localhost:4566"
     s3  = "http://localhost:4566"
     iam = "http://localhost:4566"
   }
 }
 
-resource "aws_instance" "my-first-server" { # serve para criar uma instância EC2, ou seja, um servidor virtual na nuvem da AWS
-  ami           = "ami-0c55b159cbfafe1f0" # chave para identificar a imagem da máquina virtual que será usada para criar a instância EC2
-  instance_type = "t2.micro" # tipo da instância EC2 que será criada
+resource "aws_vpc" "first-vpc" {
+  # ---------------------------------------------------------
+  # VPC: O grande "terreno" murado na nuvem.
+  # O cidr_block /16 define que esse terreno cabe 65.536 IPs.
+  # ---------------------------------------------------------
+  cidr_block = "10.0.0.0/16" 
   tags = {
-    name = "ubuntu-server" # tag para identificar a instância EC2 criada
+    Name = "production"
   }
 }
 
-resource "aws_vpc" "first-vpc" { # serve para criar uma VPC, ou seja, uma rede virtual na nuvem da AWS
-  cidr_block = "10.0.0.0/16" # IP para criar VPC
-tags = {
-    name = "production"
-  }
-}
-
-resource "aws_vpc" "second-vpc" { # serve para criar uma VPC, ou seja, uma rede virtual na nuvem da AWS
+resource "aws_vpc" "second-vpc" {
   cidr_block = "10.1.0.0/16"
-tags = {
-    name = "Dev"
+  tags = {
+    Name = "Dev"
   }
 }
 
-resource "aws_subnet" "subnet-2" { # sub-rede é uma parte da VPC onde os recursos serão criados 
-  vpc_id = aws_vpc.second-vpc.id # voce define o vpc e aponta para o id da vpc que voce quer criar a sub-rede por isso se usa .id
-  cidr_block = "10.1.1.0/24" # IP da subnet para criar a sub-rede que comunicará com a VPC
+resource "aws_subnet" "subnet-2" {
+  # ---------------------------------------------------------
+  # SUB-REDE: Uma "rua" ou divisão dentro do terreno da VPC.
+  # O cidr_block /24 define que esta rua cabe 256 IPs.
+  # ---------------------------------------------------------
+  vpc_id     = aws_vpc.second-vpc.id # Puxa o ID gerado automaticamente pela second-vpc
+  cidr_block = "10.1.1.0/24"         
+  
   tags = {
-    name = "dev-subnet"
+    Name = "dev-subnet"
+  }
+}
+
+resource "aws_instance" "my-first-server" {
+  # ---------------------------------------------------------
+  # EC2: Um servidor virtual (computador) na nuvem da AWS.
+  # ---------------------------------------------------------
+  ami           = "ami-0c55b159cbfafe1f0" # O "molde" do sistema operacional (ex: Ubuntu)
+  instance_type = "t2.micro"              # O tamanho da máquina (CPU e Memória)
+  
+  tags = {
+    Name = "ubuntu-server" 
   }
 }
