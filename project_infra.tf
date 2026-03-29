@@ -1,6 +1,6 @@
-# ---------------------------------------------------------------------
-# VARIÁVEIS: A planilha de dados da nossa infraestrutura
-# ---------------------------------------------------------------------
+
+  # VARIÁVEIS: A planilha de dados da nossa infraestrutura
+  # ---------------------------------------------------------------------
 variable "subnet_prefix" {
   description = "Lista de objetos contendo os IPs e os nomes das sub-redes"
   
