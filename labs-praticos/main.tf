@@ -41,3 +41,24 @@ resource "aws_subnet" "dynamic_subnets" {
     Name = var.subnet_prefix[count.index].name
   }
 }
+
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"] # ID oficial 
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"] # Filtra as AMIs para pegar a versão 22.04 do Ubuntu
+  }
+} # o comando most_recent serve para garantir que sempre pegaremos a AMI mais atualizada, evitando problemas de segurança ou bugs.
+  # o comando owners serve para garantir que estamos pegando a AMI oficial da Canonical, evitando AMIs maliciosas criadas por terceiros.
+  # depois geramos um filtro para pegar apenas as AMIs que correspondem à versão específica do Ubuntu que queremos usar, garantindo compatibilidade e estabilidade.
+
+resource "aws_instance" "app_server" {
+  ami = data.aws_ami.ubuntu.id
+  instance_type = "t2.micro"
+
+  tags{
+    Name = "app-server-dinamico"
+  }
+}
