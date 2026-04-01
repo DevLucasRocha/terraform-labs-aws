@@ -1,21 +1,10 @@
-# Passo 1: Baixar a imagem do Nginx lá do Docker Hub
-resource "docker_image" "nginx" {
-  name         = "nginx:latest"
-  keep_locally = false
+module "vendas" {
+  source         = "../modules/nginx" # Onde está a receita do modulo do Nginx
+  container_name = "site-de-vendas"    # puxa o valor da variavel do modulo nginx
+  external_port  = 8081               # puxa o valor da variavel do modulo nginx
 }
-
-# Passo 2: Rodar o contêiner usando a imagem baixada
-resource "docker_container" "nginx_server" {
-  image = docker_image.nginx.image_id
-  name  = "nginx-terraform"
-  
-  ports {
-    internal = 80    # A porta padrão do Nginx lá dentro
-    external = var.porta_nginx  # injetando a porta externa definida na variável
-  }
-  # Injetando o site customizado para dentro do Nginx
-  volumes {
-    host_path      = abspath(path.cwd)
-    container_path = "/usr/share/nginx/html"
-  }
+module "marketing" {
+  source         = "../modules/nginx"
+  container_name = "site-de-marketing"
+  external_port  = 8082           
 }
