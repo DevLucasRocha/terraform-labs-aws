@@ -6,16 +6,15 @@ resource "docker_image" "nginx" {
 
 # Passo 2: Rodar o contêiner usando a imagem baixada
 resource "docker_container" "nginx_server" {
-  image = docker_image.nginx.image_id
-  name  = "nginx-terraform"
-}
-
-ports {
-    internal = 80    # A porta padrão do Nginx lá dentro
-    external = var.porta_nginx  # injetando a porta externa definida na variável
-}
+    image = docker_image.nginx.image_id
+    name  = var.container_name
+    ports {
+        internal = 80    # A porta padrão do Nginx lá dentro
+        external = var.external_port  # injetando a porta externa definida na variável
+    }
   # Injetando o site customizado para dentro do Nginx
-volumes {
-    host_path      = abspath(path.cwd)
-    container_path = "/usr/share/nginx/html"
+    volumes {
+        host_path      = abspath(path.cwd)
+        container_path = "/usr/share/nginx/html"
+    }
 }
