@@ -11,7 +11,7 @@ resource "docker_container" "nginx_server" {
   
   ports {
     internal = 80    # A porta padrão do Nginx lá dentro
-    external = 8080  # A porta que vamos acessar no seu navegador
+    external = var.porta_nginx  # injetando a porta externa definida na variável
   }
   # Injetando o site customizado para dentro do Nginx
   volumes {
